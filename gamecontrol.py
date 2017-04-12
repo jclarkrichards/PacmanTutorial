@@ -1,12 +1,6 @@
 import pygame
 from pygame.locals import *
-
-WIDTH = 16
-HEIGHT = 16
-NROWS = 36
-NCOLS = 28
-SCREENSIZE = (NCOLS*WIDTH, NROWS*HEIGHT)
-BLACK = (0, 0, 0)
+from constants import *
 
 class GameController(object):
     def __init__(self):
