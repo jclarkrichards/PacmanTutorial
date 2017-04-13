@@ -1,9 +1,9 @@
 import math
 
 class Vector2D(object):
-    def __init__(self, x, y):
-        self.x = x[0]
-        self.y = y[0]
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
 
     def toTuple(self):
         return (self.x, self.y)
