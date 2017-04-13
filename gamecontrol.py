@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from constants import *
 from pacman import Pacman
-
+#This is section2
 class GameController(object):
     def __init__(self):
         pygame.init()
