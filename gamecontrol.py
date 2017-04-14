@@ -35,8 +35,8 @@ class GameController(object):
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
-        self.pacman.render(self.screen)
         self.nodes.render(self.screen)
+        self.pacman.render(self.screen)
         pygame.display.update()
         
 
