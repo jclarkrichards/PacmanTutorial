@@ -28,3 +28,11 @@ class Vector2D(object):
 
     def __div__(self, scalar):
         return Vector2D(self.x / scalar, self.y / scalar)
+
+    def __eq__(self, other):
+        if self.x == other.x and self.y == other.y:
+            return True
+        return False
+
+    def copy(self):
+        return Vector2D(self.x, self.y)

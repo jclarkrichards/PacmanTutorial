@@ -18,9 +18,9 @@ class GameController(object):
         self.background.fill(BLACK)
         
     def startGame(self):
-        self.pacman = Pacman()
         self.nodes = NodeGroup()
         self.nodes.setupTestNodes()
+        self.pacman = Pacman(self.nodes.nodeList)
         
     def update(self):
         dt = self.clock.tick(30) / 1000.0
@@ -32,6 +32,8 @@ class GameController(object):
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit()
+            #elif event.type == KEYUP:
+            #    self.pacman.keyDown = False
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
