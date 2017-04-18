@@ -14,19 +14,26 @@ class Pacman(object):
         
     def update(self, dt):
         self.position += self.direction*self.speed*dt
+        direction = self.getValidKey()
+        if direction:
+            self.moveByKey(direction)
+        else:
+            self.direction = STOP
+
+    def getValidKey(self):
         key_pressed = pygame.key.get_pressed()
         if key_pressed[K_UP]:
-            self.move(UP)
+            return UP
         elif key_pressed[K_DOWN]:
-            self.move(DOWN)
+            return DOWN
         elif key_pressed[K_LEFT]:
-            self.move(LEFT)
+            return LEFT
         elif key_pressed[K_RIGHT]:
-            self.move(RIGHT)
+            return RIGHT
         else:
-            self.move(STOP)
-
-    def move(self, direction):
+            return None
+        
+    def moveByKey(self, direction):
         self.direction = direction
 
     def render(self, screen):
