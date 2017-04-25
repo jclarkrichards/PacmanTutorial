@@ -3,6 +3,8 @@ from pygame.locals import *
 from constants import *
 from pacman import Pacman
 from nodes import NodeGroup
+from ghosts import Ghost
+from pellets import PelletGroup
 
 class GameController(object):
     def __init__(self):
@@ -18,13 +20,15 @@ class GameController(object):
         self.background.fill(BLACK)
         
     def startGame(self):
-        self.nodes = NodeGroup()
-        self.nodes.setupTestNodes()
+        self.nodes = NodeGroup("maze1.txt")
+        self.pellets = PelletGroup("maze1.txt")
         self.pacman = Pacman(self.nodes.nodeList)
-        
+        self.ghost = Ghost(self.nodes.nodeList)
+
     def update(self):
         dt = self.clock.tick(30) / 1000.0
         self.pacman.update(dt)
+        self.ghost.update(dt, self.pacman)
         self.checkEvents()
         self.render()
         
@@ -32,13 +36,13 @@ class GameController(object):
         for event in pygame.event.get():
             if event.type == QUIT:
                 exit()
-            #elif event.type == KEYUP:
-            #    self.pacman.keyDown = False
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
         self.nodes.render(self.screen)
+        self.pellets.render(self.screen)
         self.pacman.render(self.screen)
+        self.ghost.render(self.screen)
         pygame.display.update()
         
 
