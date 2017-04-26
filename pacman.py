@@ -60,4 +60,11 @@ class Pacman(MazeMouse):
                         self.setPosition()
                         self.direction = STOP
 
-
+    def eatPellets(self, pelletList):
+        for pellet in pelletList:
+            d = self.position - pellet.position
+            dSquared = d.magnitudeSquared()
+            rSquared = (pellet.radius + pellet.radius)**2
+            if dSquared <= rSquared:
+                return pellet
+        return None

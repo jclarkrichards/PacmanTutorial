@@ -73,7 +73,6 @@ class NodeGroup(object):
                 if (self.grid[row][col] == "+" or
                     self.grid[row][col] == "n" or
                     self.grid[row][col] == "N"):
-                    print "found first node at " + str(row) + ", " + str(col)
                     return Node(row, col)
         return None
 
@@ -94,16 +93,12 @@ class NodeGroup(object):
 
     def followPath(self, direction, row, col):
         if direction == LEFT and col >= 0:
-            print "Following path LEFT at "+ str(row)+", "+str(col)
             return self.pathToFollow(LEFT, row, col, "-")
         elif direction == RIGHT and col < self.grid.shape[1]:
-            print "Following path RIGHT at "+str(row)+", "+str(col)
             return self.pathToFollow(RIGHT, row, col, "-")
         elif direction == UP and row >= 0:
-            print "Following path UP at "+str(row)+", "+str(col)
             return self.pathToFollow(UP, row, col, "|")
         elif direction == DOWN and row < self.grid.shape[0]:
-            print "Following path DOWN at "+str(row)+", "+str(col)
             return self.pathToFollow(DOWN, row, col, "|")
         else:
             return None
