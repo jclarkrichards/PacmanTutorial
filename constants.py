@@ -19,4 +19,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-MAZEDATA = {"maze1.txt":{"portal":{(0, 17*HEIGHT):(27*WIDTH, 17*HEIGHT)}}}
+MAZEDATA = {"maze1.txt":{"portal":{(0, 17*HEIGHT):(27*WIDTH, 17*HEIGHT)},
+                         "linkNodes":{0:(12*WIDTH, 14*HEIGHT), 1:(15*WIDTH, 14*HEIGHT)}
+                     }
+        }
