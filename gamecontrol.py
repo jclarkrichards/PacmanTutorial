@@ -14,7 +14,7 @@ class GameController(object):
         self.setBackground()
         self.clock = pygame.time.Clock()
         self.score = 0
-        
+
     def setBackground(self):
         self.screen = pygame.display.set_mode(SCREENSIZE, 0, 32)
         self.background = pygame.surface.Surface(SCREENSIZE).convert()
@@ -29,6 +29,7 @@ class GameController(object):
     def update(self):
         dt = self.clock.tick(30) / 1000.0
         self.checkPelletDrivenEvents()
+        self.checkGhostEvents()
         self.pacman.update(dt)
         self.ghost.update(dt, self.pacman)
         self.checkEvents()
@@ -45,6 +46,17 @@ class GameController(object):
             if event.type == QUIT:
                 exit()
 
+    def checkPelletDrivenEvents(self):
+        pellet = self.pacman.eatPellets(self.pellets.pelletList)
+        if pellet:
+            self.score += pellet.value
+            self.pellets.pelletList.remove(pellet)
+            if pellet.name == "powerpellet":
+                self.ghost.setFreightMode()
+
+    def checkGhostEvents(self):
+        eaten = self.pacman.eatGhost(self.ghost)
+        
     def render(self):
         self.screen.blit(self.background, (0, 0))
         self.nodes.render(self.screen)

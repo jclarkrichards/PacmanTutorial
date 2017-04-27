@@ -23,48 +23,58 @@ class NodeGroup(object):
     def __init__(self, mazeFile):
         self.mazeFile = mazeFile
         self.nodeList = []
+        self.homeList = []
         self.grid = None
         self.nodeStack = Stack()
-        self.createNodeList()
+        self.createMainList()
+        self.createHomeList()
+        
+    def createMainList(self):
+        self.createNodeList(self.mazeFile, self.nodeList)
+        self.setupPortalNodes()
 
-    def createNodeList(self):
-        self.grid = loadtxt(self.mazeFile, dtype=str)
+    def createHomeList(self):
+        self.createNodeList("home.txt", self.homeList)
+        #print len(self.homeList)
+        self.moveHomeNodes()
+
+    def createNodeList(self, textFile, nodeList):
+        self.grid = loadtxt(textFile, dtype=str)
         startNode = self.findFirstNode(*self.grid.shape)
         self.nodeStack.push(startNode)
-        
         while not self.nodeStack.isEmpty():
             node = self.nodeStack.pop()
-            self.addNode(node)
-            leftNode = self.getPathNode(LEFT, node.row, node.column-1)
-            downNode = self.getPathNode(DOWN, node.row+1, node.column)
-            rightNode = self.getPathNode(RIGHT, node.row, node.column+1)
-            upNode = self.getPathNode(UP, node.row-1, node.column)
+            self.addNode(node, nodeList)
+            leftNode = self.getPathNode(LEFT, node.row, node.column-1, nodeList)
+            downNode = self.getPathNode(DOWN, node.row+1, node.column, nodeList)
+            rightNode = self.getPathNode(RIGHT, node.row, node.column+1, nodeList)
+            upNode = self.getPathNode(UP, node.row-1, node.column, nodeList)
             node.neighbors[LEFT] = leftNode
             node.neighbors[RIGHT] = rightNode
             node.neighbors[UP] = upNode
             node.neighbors[DOWN] = downNode
-            self.addNodeToStack(leftNode)
-            self.addNodeToStack(rightNode)
-            self.addNodeToStack(upNode)
-            self.addNodeToStack(downNode)
+            self.addNodeToStack(leftNode, nodeList)
+            self.addNodeToStack(rightNode, nodeList)
+            self.addNodeToStack(upNode, nodeList)
+            self.addNodeToStack(downNode, nodeList)
         self.setupPortalNodes()
-
-    def getNode(self, x, y):
-        for node in self.nodeList:
+        
+    def getNode(self, x, y, nodeList=[]):
+        for node in nodeList:
             if node.position.x == x and node.position.y == y:
                 return node
         return None
 
-    def getNodeFromNode(self, node):
+    def getNodeFromNode(self, node, nodeList):
         if node is not None:
-            for inode in self.nodeList:
+            for inode in nodeList:
                 if node.row == inode.row and node.column == inode.column:
                     return inode
         return node
 
-    def getPathNode(self, direction, row, col):
+    def getPathNode(self, direction, row, col, nodeList):
         tempNode = self.followPath(direction, row, col)
-        return self.getNodeFromNode(tempNode)
+        return self.getNodeFromNode(tempNode, nodeList)
 
     def findFirstNode(self, rows, cols):
         nodeFound = False
@@ -76,17 +86,17 @@ class NodeGroup(object):
                     return Node(row, col)
         return None
 
-    def addNode(self, node):
-        nodeInList = self.nodeInList(node)
+    def addNode(self, node, nodeList):
+        nodeInList = self.nodeInList(node, nodeList)
         if not nodeInList:
-            self.nodeList.append(node)
+            nodeList.append(node)
 
-    def addNodeToStack(self, node):
-        if node is not None and not self.nodeInList(node):
+    def addNodeToStack(self, node, nodeList):
+        if node is not None and not self.nodeInList(node, nodeList):
             self.nodeStack.push(node)
 
-    def nodeInList(self, node):
-        for inode in self.nodeList:
+    def nodeInList(self, node, nodeList):
+        for inode in nodeList:
             if node.position.x == inode.position.x and node.position.y == inode.position.y:
                 return True
         return False
@@ -124,11 +134,26 @@ class NodeGroup(object):
     def setupPortalNodes(self):
         for pos1 in MAZEDATA[self.mazeFile]["portal"].keys():
             #print pos1
-            node1 = self.getNode(*pos1)
-            node2 = self.getNode(*MAZEDATA[self.mazeFile]["portal"][pos1])
+            node1 = self.getNode(*pos1, nodeList=self.nodeList)
+            node2 = self.getNode(*MAZEDATA[self.mazeFile]["portal"][pos1], nodeList=self.nodeList)
             node1.portalNode = node2
             node2.portalNode = node1
-    
+
+    def moveHomeNodes(self):
+        '''Move the home nodes to the middle of the screen'''
+        nodeA = self.getNode(*MAZEDATA[self.mazeFile]["linkNodes"][0], nodeList=self.nodeList)
+        nodeB = self.getNode(*MAZEDATA[self.mazeFile]["linkNodes"][1], nodeList=self.nodeList)
+        mid = (nodeA.position + nodeB.position) / 2.0
+        mid = Vector2D(int(mid.x), int(mid.y))
+        vec = Vector2D(self.homeList[0].position.x, self.homeList[0].position.y)
+        for node in self.homeList:
+            node.position -= vec
+            node.position += mid
+        nodeA.neighbors[RIGHT] = self.homeList[0]
+        nodeB.neighbors[LEFT] = self.homeList[0]
+        self.homeList[0].neighbors[RIGHT] = nodeB
+        self.homeList[0].neighbors[LEFT] = nodeA
+        
     def setupTestNodes(self):
         nodeA = Node(5, 5)
         nodeB = Node(5, 10)
@@ -157,4 +182,6 @@ class NodeGroup(object):
         
     def render(self, screen):
         for node in self.nodeList:
+            node.render(screen)
+        for node in self.homeList:
             node.render(screen)

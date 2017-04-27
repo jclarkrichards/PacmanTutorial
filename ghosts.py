@@ -65,7 +65,21 @@ class Ghost(MazeMouse):
             distances.append(diffVec.magnitudeSquared())
         index = distances.index(min(distances))
         return validDirections[index]
-        
+
+    def setFreightMode(self):
+        '''Force into FREIGHT mode if not already in FREIGHT mode'''
+        if self.mode.name != "FREIGHT":
+            if self.mode.time is not None:
+                dt = self.mode.time - self.modeTimer
+                self.modeStack.push(Mode(name=self.mode.name, time=dt))
+            else:
+                self.modeStack.push(Mode(name=self.mode.name))
+            self.mode = Mode("FREIGHT", time=7, speedMult=0.5)
+            self.modeTimer = 0
+        elif self.mode.name == "FREIGHT":
+            self.mode = Mode("FREIGHT", time=7, speedMult=0.5)
+            self.modeTimer = 0
+
     def setupModeStack(self):
         modes = Stack()
         modes.push(Mode(name="CHASE"))
@@ -84,6 +98,12 @@ class Ghost(MazeMouse):
     def setChaseGoal(self, pacman):
         self.goal = pacman.position
 
+    def setRandomGoal(self):
+        '''Set a random position on the screen'''
+        x = randint(0, NCOLS*WIDTH)
+        y = randint(0, NROWS*HEIGHT)
+        self.goal = Vector2D(x, y)
+
     def modeUpdate(self, dt):
         self.modeTimer += dt
         if self.mode.time is not None:
@@ -99,4 +119,6 @@ class Ghost(MazeMouse):
             self.setChaseGoal(pacman)
         elif self.mode.name == "SCATTER":
             self.setScatterGoal()
+        elif self.mode.name == "FREIGHT":
+            self.setRandomGoal()
         self.moveBySelf()

@@ -36,6 +36,11 @@ class PelletGroup(object):
         if len(self.pelletList) == 0: return True
         else: return False
         
+    def isEmpty(self):
+        if len(self.pelletList) == 0:
+            return True
+        return False
+
     def createPelletList(self, levelFile):
         grid = loadtxt(levelFile, dtype=str)
         rows, cols = grid.shape

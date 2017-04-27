@@ -64,7 +64,17 @@ class Pacman(MazeMouse):
         for pellet in pelletList:
             d = self.position - pellet.position
             dSquared = d.magnitudeSquared()
-            rSquared = (pellet.radius + pellet.radius)**2
+            rSquared = 4 * pellet.radius**2
             if dSquared <= rSquared:
                 return pellet
         return None
+
+    def eatGhost(self, ghost):
+        d = self.position - ghost.position
+        dSquared = d.magnitudeSquared()
+        rSquared = (self.radius + ghost.radius)**2
+        if dSquared <= rSquared:
+            print "colliding with ghost"
+            return True
+        return False
+            
